@@ -28,41 +28,29 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-paper-warm px-6">
-      <div className="card w-full max-w-sm p-8 fade-up">
-        <h1 className="text-2xl font-semibold mb-1">Welcome back</h1>
-        <p className="text-ink-light text-sm mb-6">Sign in to your planner</p>
+    <main className="min-h-screen flex items-center justify-center px-4 surface">
+      <div className="card w-full max-w-sm p-7 fade-up">
+        <h1 className="text-2xl font-semibold mb-1 text-main">Welcome back</h1>
+        <p className="text-muted text-sm mb-6">Sign in to your planner</p>
 
         <form onSubmit={onSubmit} className="space-y-3">
           <div>
-            <label className="text-xs text-ink-light mb-1 block">Email</label>
-            <input
-              className="input"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <label className="text-xs text-muted mb-1.5 block">Email</label>
+            <input className="input" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div>
-            <label className="text-xs text-ink-light mb-1 block">Password</label>
-            <input
-              className="input"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <label className="text-xs text-muted mb-1.5 block">Password</label>
+            <input className="input" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
-          {err && <p className="text-sm text-accent-personal">{err}</p>}
-          <button className="btn-primary w-full justify-center" disabled={loading}>
+          {err && <p className="text-sm" style={{ color: 'var(--danger)' }}>{err}</p>}
+          <button className="btn-accent w-full justify-center py-2.5" disabled={loading}>
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
 
-        <p className="text-sm text-ink-light mt-6 text-center">
+        <p className="text-sm text-muted mt-6 text-center">
           No account yet?{' '}
-          <Link href="/auth/signup" className="text-accent-school hover:underline">
+          <Link href="/auth/signup" className="hover:underline" style={{ color: 'var(--accent)' }}>
             Sign up
           </Link>
         </p>

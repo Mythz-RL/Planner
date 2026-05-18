@@ -1,94 +1,60 @@
-# Planner
+# Planner v2
 
-Your all-in-one planning workspace. Multiple calendars, daily to-dos, goals, and a read-only share link for parents. Built with Next.js + Supabase. Free to host on Vercel.
+Calendars, daily to-dos, habits, and goals. One workspace, every device.
 
-## What's in here
+## What's new in v2
 
-- **Today** — events for today + a checkable to-do list
-- **Calendar** — month grid with multiple categories (School, Debate, Sports, Personal). Toggle each on/off. Click any day to add events.
-- **Weekly to-dos** — a column per day, navigate by week
-- **Goals** — progress bars, increment with +/-, set deadlines
-- **Share with parents** — generates a read-only URL that ONLY shows your School calendar
+- **Fully mobile-responsive** — works perfectly on iPhone, slide-in menu, touch-friendly buttons
+- **Themes** — Light, Dark, Sepia, Midnight, Forest presets + custom theme builder
+- **Recurring events** — daily, weekdays, weekly, monthly
+- **Habit tracker** — emoji icons, color picker, 30-day heatmap, streak counter
+- **Subtasks** — nest todos under todos
+- **Drag-to-reorder** — drag todos to reorder or move between days
+- **Smoother UI** — animations, confetti when you hit a goal, polished micro-interactions
+- **PWA ready** — "Add to Home Screen" on iOS gives you an app-like experience
 
-## Deploy in 5 steps (~10 minutes)
+## Features
 
-### 1. Make a Supabase account (the database)
+- **Today** — events, todos, habits all in one view + quick stats
+- **Calendar** — month grid with multiple categories, recurring events, color customization
+- **Weekly to-dos** — column per day, drag tasks between days
+- **Habits** — build streaks, see 30-day history at a glance
+- **Goals** — progress bars with confetti on completion
+- **Theme** — customize everything
+- **Share with parents** — read-only link, only shows School events
 
-1. Go to **https://supabase.com** and sign up (free tier is plenty)
-2. Click **New project**. Name it `planner`. Pick a strong DB password and save it.
-3. Wait ~1 minute for the project to provision.
+## Upgrading from v1
 
-### 2. Set up the database
+If you already deployed v1, just run the migration:
 
-1. In your Supabase project sidebar, click **SQL Editor**
-2. Click **New query**
-3. Open the file **`supabase-schema.sql`** from this project, copy everything, paste it into the editor
-4. Click **Run** (bottom right). You should see "Success. No rows returned."
+1. Go to your Supabase project → SQL Editor
+2. Open `supabase-migration-v2.sql`, copy all of it
+3. Paste into SQL Editor → Run
+4. Push the new code to GitHub (see below) — Vercel auto-deploys
 
-### 3. Get your Supabase keys
+That's it. No data loss; the migration only adds new tables and columns.
 
-1. In Supabase, click **Project Settings** (gear icon) → **API**
-2. Copy these two values:
-   - **Project URL** (looks like `https://abc123.supabase.co`)
-   - **anon / public key** (long string starting with `eyJ...`)
-3. Create a file named `.env.local` in the project root and paste them in:
+## Push the update to GitHub
 
-```
-NEXT_PUBLIC_SUPABASE_URL=https://abc123.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
-```
-
-### 4. Push to GitHub
-
-1. Make a GitHub account if you don't have one: **https://github.com**
-2. Create a new empty repository called `planner` (don't add a README, it'll conflict)
-3. In your terminal, from the project folder:
+From the planner folder in Command Prompt:
 
 ```bash
-git init
 git add .
-git commit -m "initial planner"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/planner.git
-git push -u origin main
+git commit -m "v2: mobile, themes, habits, recurring events"
+git push
 ```
 
-### 5. Deploy to Vercel
+Vercel detects the push and rebuilds in ~2 minutes.
 
-1. Go to **https://vercel.com** and sign in with GitHub
-2. Click **Add New → Project**, pick your `planner` repo
-3. Before clicking Deploy, expand **Environment Variables** and add the same two from step 3:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-4. Click **Deploy**. Wait ~2 minutes.
-5. You'll get a URL like `planner-yourname.vercel.app`. Open it on your laptop and on both phones. Sign up once, log in everywhere. **Everything syncs.**
+## Fresh deploy (if you haven't deployed at all yet)
 
-## Run it locally (optional)
+See the original README in the v1 zip, or:
 
-```bash
-npm install
-npm run dev
-```
+1. Create Supabase project, run **both** `supabase-schema.sql` and `supabase-migration-v2.sql`
+2. Push code to GitHub, import to Vercel
+3. Add env vars `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+4. Deploy
 
-Open `http://localhost:3000`.
+## Coming next (per request)
 
-## How the parent share works
-
-1. Sign in, click **Share with parents** in the sidebar
-2. Hit **Create share link** — you get a URL like `planner-yourname.vercel.app/shared/abc123xyz`
-3. Send that to your parents. They can see only your **School** calendar, no login needed, no edits.
-4. Revoke anytime from the same page.
-
-Anything in your Debate, Sports, or Personal calendars stays private.
-
-## Adding more features later
-
-The architecture is set up to grow. Stuff you could add:
-- Recurring events (weekly swim practice, etc.)
-- Notifications/reminders (Supabase has a cron + edge functions feature for this)
-- Drag-to-reorder to-dos
-- Notes per event
-- Habit streaks
-- Import from Google Calendar
-
-Open the relevant page in `/app/dashboard/` and extend. The data layer (Supabase) handles sync automatically — whatever you change in the UI shows up on all devices within a second.
+- Web push notifications for event reminders

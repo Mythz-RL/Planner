@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, addMonths } from 'date-fns';
+import { expandEvents, RawEvent } from '@/lib/utils';
 
-// Public read-only view — no auth, anon client.
 async function getSharedData(token: string) {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -25,29 +25,28 @@ async function getSharedData(token: string) {
   const { data: events } = await supabase
     .from('events')
     .select('*')
-    .eq('user_id', share.user_id)
-    .gte('start_date', format(new Date(), 'yyyy-MM-dd'))
-    .order('start_date');
+    .eq('user_id', share.user_id);
 
   const calIds = (cals ?? []).map((c: any) => c.id);
-  const schoolEvents = (events ?? []).filter((e: any) => calIds.includes(e.calendar_id));
+  const schoolEvents = ((events ?? []) as RawEvent[]).filter((e) => calIds.includes(e.calendar_id));
 
-  return { cals: cals ?? [], events: schoolEvents };
+  // Expand into next 60 days
+  const today = new Date();
+  const horizon = addMonths(today, 2);
+  const occurrences = expandEvents(schoolEvents, today, horizon);
+
+  return { cals: cals ?? [], events: occurrences };
 }
 
-export default async function SharedPage({
-  params,
-}: {
-  params: { token: string };
-}) {
+export default async function SharedPage({ params }: { params: { token: string } }) {
   const data = await getSharedData(params.token);
 
   if (!data) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-paper-warm">
-        <div className="card p-8 text-center">
+      <main className="min-h-screen flex items-center justify-center" style={{ background: '#fbfaf9' }}>
+        <div className="card p-8 text-center" style={{ background: 'white', border: '1px solid #ebeae6', borderRadius: 8 }}>
           <h1 className="text-xl font-semibold mb-2">Link not found</h1>
-          <p className="text-ink-light text-sm">
+          <p className="text-sm" style={{ color: '#787774' }}>
             This share link is invalid or has been revoked.
           </p>
         </div>
@@ -56,38 +55,42 @@ export default async function SharedPage({
   }
 
   return (
-    <main className="min-h-screen bg-paper-warm py-12 px-6">
+    <main className="min-h-screen py-8 sm:py-12 px-4 sm:px-6" style={{ background: '#fbfaf9' }}>
       <div className="max-w-2xl mx-auto fade-up">
         <div className="mb-8">
-          <div className="text-xs uppercase tracking-wider text-ink-faint mb-1">
+          <div className="text-xs uppercase tracking-wider mb-1" style={{ color: '#9b9a97' }}>
             Read-only · school events
           </div>
-          <h1 className="text-3xl font-semibold">Upcoming</h1>
+          <h1 className="text-3xl font-semibold" style={{ color: '#37352f' }}>Upcoming</h1>
         </div>
 
         {data.events.length === 0 ? (
-          <p className="text-ink-light italic">No upcoming school events.</p>
+          <p className="italic" style={{ color: '#787774' }}>No upcoming school events.</p>
         ) : (
           <ul className="space-y-2">
             {data.events.map((e: any) => (
-              <li key={e.id} className="card p-4 flex items-start gap-3">
+              <li
+                key={e.id + e.occurrence_date}
+                className="p-4 flex items-start gap-3"
+                style={{ background: 'white', border: '1px solid #ebeae6', borderRadius: 8 }}
+              >
                 <div className="text-center w-14 shrink-0">
-                  <div className="text-xs uppercase text-ink-faint">
-                    {format(parseISO(e.start_date), 'MMM')}
+                  <div className="text-xs uppercase" style={{ color: '#9b9a97' }}>
+                    {format(parseISO(e.occurrence_date), 'MMM')}
                   </div>
-                  <div className="text-2xl font-semibold">
-                    {format(parseISO(e.start_date), 'd')}
+                  <div className="text-2xl font-semibold" style={{ color: '#37352f' }}>
+                    {format(parseISO(e.occurrence_date), 'd')}
                   </div>
                 </div>
                 <div className="flex-1">
-                  <div className="font-medium">{e.title}</div>
+                  <div className="font-medium" style={{ color: '#37352f' }}>{e.title}</div>
                   {e.start_time && (
-                    <div className="text-xs text-ink-faint mt-0.5">
+                    <div className="text-xs mt-0.5" style={{ color: '#9b9a97' }}>
                       {e.start_time.slice(0, 5)}
                     </div>
                   )}
                   {e.description && (
-                    <div className="text-sm text-ink-light mt-1">{e.description}</div>
+                    <div className="text-sm mt-1" style={{ color: '#787774' }}>{e.description}</div>
                   )}
                 </div>
               </li>

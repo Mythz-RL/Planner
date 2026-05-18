@@ -1,0 +1,10 @@
+{
+  "name": "Planner",
+  "short_name": "Planner",
+  "description": "Calendars, todos, habits, and goals.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "portrait"
+}
